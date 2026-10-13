@@ -1,0 +1,10 @@
+## Interface: 110007, 110100
+## Title: |cff00ccffiLevel|r
+## Notes: Dynamically calculates and displays character item level on unit tooltips.
+## Author: Garry
+## Version: 1.0.0
+## IconTexture: Interface\Icons\inv_misc_gear_01
+## Category-enUS: Tooltips
+## SavedVariables: iLevelDB
+
+iLevel.lua

@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#1c1d2e"/>
+      <stop offset="60%" stop-color="#12131d"/>
+      <stop offset="100%" stop-color="#0a0b10"/>
+    </radialGradient>
+
+    <!-- Rich WoW Gold Metallic Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff1a8"/>
+      <stop offset="30%" stop-color="#f5af19"/>
+      <stop offset="70%" stop-color="#e67e00"/>
+      <stop offset="100%" stop-color="#994d00"/>
+    </linearGradient>
+
+    <linearGradient id="goldStroke" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffea85"/>
+      <stop offset="50%" stop-color="#d48806"/>
+      <stop offset="100%" stop-color="#874d00"/>
+    </linearGradient>
+
+    <!-- Epic Purple Gradients -->
+    <linearGradient id="shieldBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2e1f4d"/>
+      <stop offset="50%" stop-color="#1c1330"/>
+      <stop offset="100%" stop-color="#100a1c"/>
+    </linearGradient>
+
+    <linearGradient id="purpleGlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+
+    <!-- Diamond Facet Shading -->
+    <linearGradient id="gemFacetLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3e8ff"/>
+      <stop offset="100%" stop-color="#d8b4fe"/>
+    </linearGradient>
+    <linearGradient id="gemFacetMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+    <linearGradient id="gemFacetDark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7e22ce"/>
+      <stop offset="100%" stop-color="#581c87"/>
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="shieldShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.75"/>
+    </filter>
+    <filter id="gemGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#a855f7" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Container (CurseForge / App Icon standard) -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect x="3" y="3" width="506" height="506" rx="109" fill="none" stroke="url(#goldStroke)" stroke-width="2.5" opacity="0.35"/>
+
+  <!-- Subtle Radial Backlight behind the Shield -->
+  <circle cx="256" cy="200" r="170" fill="#9333ea" opacity="0.14" filter="blur(20px)"/>
+
+  <!-- Main Shield -->
+  <g filter="url(#shieldShadow)">
+    <!-- Outer Heavy Beveled Gold Rim -->
+    <path d="M256,54 L380,104 C380,218 330,306 256,346 C182,306 132,218 132,104 Z"
+          fill="none" stroke="url(#goldGrad)" stroke-width="14" stroke-linejoin="round"/>
+    
+    <!-- Shield Plate Fill -->
+    <path d="M256,62 L372,108 C372,214 326,296 256,334 C186,296 140,214 140,108 Z"
+          fill="url(#shieldBg)"/>
+
+    <!-- Inner Polished Gold Inset Line -->
+    <path d="M256,80 L354,120 C354,204 316,274 256,308 C196,274 158,204 158,120 Z"
+          fill="none" stroke="url(#goldStroke)" stroke-width="2.5" opacity="0.6" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Progression Arc (5 Distinct WoW Tiers with High-Visibility Glow) -->
+  <g transform="translate(256, 185)">
+    <!-- Background Track -->
+    <path d="M -94,8 A 94 94 0 1 1 94,8" fill="none" stroke="#1f1833" stroke-width="9" stroke-linecap="round"/>
+
+    <!-- Tier 1: Green (Explorer 554+) -->
+    <path d="M -92,-6 A 92 92 0 0 1 -64,-64" fill="none" stroke="#22c55e" stroke-width="8" stroke-linecap="round"/>
+    <!-- Tier 2: Blue (Adventurer 580+) -->
+    <path d="M -48,-78 A 92 92 0 0 1 -4,-92" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round"/>
+    <!-- Tier 3: Purple (Champion 606+) -->
+    <path d="M 10,-92 A 92 92 0 0 1 54,-74" fill="none" stroke="#a855f7" stroke-width="8" stroke-linecap="round"/>
+    <!-- Tier 4: Magenta (Hero 619+) -->
+    <path d="M 66,-64 A 92 92 0 0 1 88,-20" fill="none" stroke="#f43f5e" stroke-width="8" stroke-linecap="round"/>
+    <!-- Tier 5: Orange (Mythic 639+) -->
+    <path d="M 90,-4 A 92 92 0 0 1 82,34" fill="none" stroke="#ff7b00" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- Central Faceted Prismatic Diamond (Item Level / Power Symbol) -->
+  <g transform="translate(256, 192)" filter="url(#gemGlow)">
+    <!-- Gold Setting/Bezel -->
+    <polygon points="-52,-20 0,-56 52,-20 0,52" fill="none" stroke="url(#goldGrad)" stroke-width="6" stroke-linejoin="round"/>
+    
+    <!-- Top Table Facet -->
+    <polygon points="0,-52 -28,-20 0,0 28,-20" fill="url(#gemFacetLight)"/>
+    
+    <!-- Top Left Facet -->
+    <polygon points="0,-52 -48,-20 -28,-20" fill="#e9d5ff"/>
+    <!-- Top Right Facet -->
+    <polygon points="0,-52 48,-20 28,-20" fill="#c084fc"/>
+
+    <!-- Bottom Left Facet -->
+    <polygon points="-48,-20 0,48 -16,-2" fill="url(#gemFacetMid)"/>
+    <!-- Bottom Right Facet -->
+    <polygon points="48,-20 0,48 16,-2" fill="url(#gemFacetDark)"/>
+
+    <!-- Bottom Center Left -->
+    <polygon points="-28,-20 -16,-2 0,48 0,0" fill="#a855f7"/>
+    <!-- Bottom Center Right -->
+    <polygon points="28,-20 16,-2 0,48 0,0" fill="#7e22ce"/>
+
+    <!-- Center Highlight Glint -->
+    <circle cx="0" cy="-12" r="3.5" fill="#ffffff" opacity="0.95"/>
+  </g>
+
+  <!-- Modern Graphic Design Typography: 'iLvl' -->
+  <g transform="translate(256, 424)" text-anchor="middle">
+    <!-- Drop Shadow for Text -->
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Montserrat', sans-serif"
+          font-weight="900" font-size="78" letter-spacing="1" fill="#000000" opacity="0.7" y="4">
+      <tspan fill="#000000">i</tspan><tspan fill="#000000">Lvl</tspan>
+    </text>
+
+    <!-- Main Clean Vector Text -->
+    <text font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Montserrat', sans-serif"
+          font-weight="900" font-size="78" letter-spacing="1" y="0">
+      <!-- Lowercase 'i' in radiant Warcraft gold -->
+      <tspan fill="url(#goldGrad)">i</tspan>
+      <!-- 'Lvl' in pure crisp white -->
+      <tspan fill="#ffffff">Lvl</tspan>
+    </text>
+
+    <!-- Clean Tracked Subtitle: 'ITEM LEVEL' -->
+    <text y="34" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Montserrat', sans-serif"
+          font-weight="700" font-size="14" letter-spacing="7" fill="#94a3b8">
+      ITEM LEVEL
+    </text>
+  </g>
+</svg>
