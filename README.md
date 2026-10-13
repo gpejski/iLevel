@@ -1,6 +1,6 @@
 # iLevel - World of Warcraft Addon
 
-**iLevel** is a lightweight, high-performance World of Warcraft (Retail / The War Within 11.x) addon that dynamically calculates and displays a character's equipped item level directly on their tooltip.
+**iLevel** is a lightweight, high-performance World of Warcraft (Retail / Patch 12.1.5 & The War Within) addon that dynamically calculates and displays a character's equipped item level directly on their tooltip.
 
 ---
 

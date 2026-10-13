@@ -87,34 +87,61 @@ local function FormatItemLevel(ilvl)
 end
 
 -- ============================================================================
+-- Secret Value Guards (WoW 12.0+ / 12.1+ Taint Protection)
+-- ============================================================================
+local _issecretvalue = _G.issecretvalue
+local function issecretvalue(value)
+    return _issecretvalue and _issecretvalue(value) and true or false
+end
+
+-- ============================================================================
 -- Unit Token Resolution Helper
 -- Resolves an active unit token for a given GUID if mouseover or target shifted
 -- ============================================================================
 local function ResolveUnitByGUID(guid, preferredUnit)
-    if preferredUnit and UnitExists(preferredUnit) and UnitGUID(preferredUnit) == guid then
-        return preferredUnit
+    if not guid or issecretvalue(guid) then return nil end
+    if preferredUnit and not issecretvalue(preferredUnit) and UnitExists(preferredUnit) then
+        local uguid = UnitGUID(preferredUnit)
+        if not issecretvalue(uguid) and uguid == guid then
+            return preferredUnit
+        end
     end
-    if UnitExists("mouseover") and UnitGUID("mouseover") == guid then
-        return "mouseover"
+    if UnitExists("mouseover") then
+        local uguid = UnitGUID("mouseover")
+        if not issecretvalue(uguid) and uguid == guid then
+            return "mouseover"
+        end
     end
-    if UnitExists("target") and UnitGUID("target") == guid then
-        return "target"
+    if UnitExists("target") then
+        local uguid = UnitGUID("target")
+        if not issecretvalue(uguid) and uguid == guid then
+            return "target"
+        end
     end
-    if UnitExists("focus") and UnitGUID("focus") == guid then
-        return "focus"
+    if UnitExists("focus") then
+        local uguid = UnitGUID("focus")
+        if not issecretvalue(uguid) and uguid == guid then
+            return "focus"
+        end
     end
     if IsInRaid and IsInRaid() then
         for i = 1, 40 do
             local u = "raid" .. i
-            if UnitExists(u) and UnitGUID(u) == guid then
-                return u
+            if UnitExists(u) then
+                local uguid = UnitGUID(u)
+                if not issecretvalue(uguid) and uguid == guid then
+                    return u
+                end
             end
         end
     elseif IsInGroup and IsInGroup() then
         for i = 1, 4 do
             local u = "party" .. i
-            if UnitExists(u) and UnitGUID(u) == guid then
-                return u
+            if UnitExists(u) then
+                local uguid = UnitGUID(u)
+                if not issecretvalue(uguid) and uguid == guid then
+                    return u
+                end
             end
         end
     end
@@ -125,12 +152,16 @@ end
 -- Item Level Calculation Engine
 -- ============================================================================
 local function CalculateUnitItemLevel(unit)
-    if not unit or not UnitExists(unit) then
+    if not unit or issecretvalue(unit) or not UnitExists(unit) then
         return nil, false
     end
 
     -- For the local player, Blizzard provides GetAverageItemLevel directly
-    if UnitIsUnit(unit, "player") then
+    local isSelf = false
+    local okSelf, resSelf = pcall(UnitIsUnit, unit, "player")
+    if okSelf and resSelf then isSelf = true end
+
+    if isSelf then
         local _, equipped = GetAverageItemLevel()
         return equipped, false
     end
@@ -210,20 +241,34 @@ local function UpdateOrCreateTooltipLine(tooltip, text)
 end
 
 local function RefreshActiveTooltip(guid, avgILvl)
-    if not GameTooltip:IsShown() then return end
+    if not GameTooltip:IsShown() or not guid or issecretvalue(guid) then return end
 
     local _, tooltipUnit = GameTooltip:GetUnit()
-    if not tooltipUnit and UnitGUID("mouseover") == guid then
-        tooltipUnit = "mouseover"
+    if tooltipUnit and issecretvalue(tooltipUnit) then tooltipUnit = nil end
+
+    if not tooltipUnit and UnitExists("mouseover") then
+        local okM, mguid = pcall(UnitGUID, "mouseover")
+        if okM and not issecretvalue(mguid) and mguid == guid then
+            tooltipUnit = "mouseover"
+        end
     end
 
-    local currentGUID = tooltipUnit and UnitGUID(tooltipUnit)
+    local currentGUID = nil
+    if tooltipUnit and not issecretvalue(tooltipUnit) then
+        local okG, uguid = pcall(UnitGUID, tooltipUnit)
+        if okG and not issecretvalue(uguid) then
+            currentGUID = uguid
+        end
+    end
+
     if not currentGUID and GameTooltip.GetPrimaryTooltipData then
         local tooltipData = GameTooltip:GetPrimaryTooltipData()
-        currentGUID = tooltipData and tooltipData.guid
+        if tooltipData and not issecretvalue(tooltipData.guid) then
+            currentGUID = tooltipData.guid
+        end
     end
 
-    if currentGUID == guid then
+    if currentGUID and currentGUID == guid then
         local lineText = "Item Level: " .. FormatItemLevel(avgILvl)
         UpdateOrCreateTooltipLine(GameTooltip, lineText)
     end
@@ -253,10 +298,23 @@ local function ProcessQueue()
     local item = table.remove(inspectQueue, 1)
     local unit, guid = item.unit, item.guid
 
+    if not guid or issecretvalue(guid) then
+        ProcessQueue()
+        return
+    end
+
     -- Re-resolve unit token in case player moved cursor
     local resolvedUnit = ResolveUnitByGUID(guid, unit)
 
-    if not resolvedUnit or not CanInspect(resolvedUnit) or not CheckInspectDistance(resolvedUnit) then
+    local canInspect = false
+    if resolvedUnit and not issecretvalue(resolvedUnit) and UnitExists(resolvedUnit) then
+        local okInspect, resInspect = pcall(CanInspect, resolvedUnit)
+        if okInspect and resInspect then
+            canInspect = true
+        end
+    end
+
+    if not canInspect then
         ProcessQueue()
         return
     end
@@ -282,6 +340,7 @@ local function ProcessQueue()
 end
 
 local function QueueInspect(unit, guid)
+    if not guid or issecretvalue(guid) then return end
     -- Don't queue if already inspecting this guid
     if currentInspectGUID == guid then return end
 
@@ -296,7 +355,7 @@ end
 
 -- Handle INSPECT_READY event with retry mechanism for pending item info
 local function OnInspectReady(guid)
-    if not isInspecting or currentInspectGUID ~= guid then
+    if not isInspecting or not guid or issecretvalue(guid) or currentInspectGUID ~= guid then
         return
     end
 
@@ -351,14 +410,33 @@ local function OnTooltipSetUnit(tooltip, data)
     if tooltip ~= GameTooltip then return end
 
     local _, unit = tooltip:GetUnit()
-    if not unit and data and data.guid then
-        unit = ResolveUnitByGUID(data.guid, "mouseover")
+    if unit and issecretvalue(unit) then
+        unit = nil
     end
 
-    if not unit or not UnitIsPlayer(unit) then return end
+    local guid = data and data.guid
+    if guid and issecretvalue(guid) then
+        guid = nil
+    end
+
+    if not unit and guid then
+        unit = ResolveUnitByGUID(guid, "mouseover")
+    end
+
+    if not unit or issecretvalue(unit) then return end
+
+    -- Safe call for UnitIsPlayer (strictly protected from secret value / taint crashes)
+    local okPlayer, isPlayer = pcall(UnitIsPlayer, unit)
+    if not okPlayer or not isPlayer then return end
 
     -- 1. Local Player
-    if UnitIsUnit(unit, "player") then
+    local isSelf = false
+    local okSelf, resSelf = pcall(UnitIsUnit, unit, "player")
+    if okSelf and resSelf then
+        isSelf = true
+    end
+
+    if isSelf then
         local _, equipped = GetAverageItemLevel()
         if equipped and equipped > 0 then
             local text = "Item Level: " .. FormatItemLevel(equipped)
@@ -368,8 +446,14 @@ local function OnTooltipSetUnit(tooltip, data)
     end
 
     -- 2. Other Players
-    local guid = (data and data.guid) or UnitGUID(unit)
-    if not guid then return end
+    if not guid then
+        local okGuid, uguid = pcall(UnitGUID, unit)
+        if okGuid and not issecretvalue(uguid) then
+            guid = uguid
+        end
+    end
+
+    if not guid or issecretvalue(guid) then return end
 
     local now = GetTime()
     local cached = cache[guid]
@@ -383,7 +467,15 @@ local function OnTooltipSetUnit(tooltip, data)
     end
 
     -- Value is not cached: check if player is inspectable
-    if CanInspect(unit) and CheckInspectDistance(unit) then
+    local canInspect = false
+    if unit and not issecretvalue(unit) and UnitExists(unit) then
+        local okInspect, resInspect = pcall(CanInspect, unit)
+        if okInspect and resInspect then
+            canInspect = true
+        end
+    end
+
+    if canInspect then
         if iLevelDB == nil or iLevelDB.showLoading ~= false then
             local text = "Item Level: |cff888888Loading...|r"
             UpdateOrCreateTooltipLine(tooltip, text)

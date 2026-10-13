@@ -1,4 +1,4 @@
-## Interface: 110007, 110100
+## Interface: 120105, 120100, 110007, 110100
 ## Title: |cff00ccffiLevel|r
 ## Notes: Dynamically calculates and displays character item level on unit tooltips.
 ## Author: Garry
